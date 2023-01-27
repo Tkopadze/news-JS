@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const baseConfig = {
-    entry: path.resolve(__dirname, './src/index.js'),
+    entry: path.resolve(__dirname, './src/index.ts'),
     mode: 'development',
     module: {
         rules: [
@@ -12,15 +12,42 @@ const baseConfig = {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.ts$/,
+                exclude: [/node_modules/],
+                loader: 'ts-loader'
+            }
         ],
     },
     resolve: {
-        extensions: ['.js'],
+        extensions: ['.js','.ts','.webpack.js'],
     },
     output: {
-        filename: 'index.js',
-        path: path.resolve(__dirname, '../dist'),
+        chunkFilename: '[name].js',
+        filename: '[name].js'
     },
+    // devServer: {
+    //     static: path.join(__dirname, 'public/'),
+    //     devMiddleware: {
+    //       publicPath: '../dist/'
+    //     },
+    //     port: 3000,
+    //     hot: "only"
+    //   },
+
+    devServer: {
+        onAfterSetupMiddleware: function (devServer) {
+          if (!devServer) {
+            throw new Error('webpack-dev-server is not defined');
+          }
+    
+          devServer.app.get('/some/path', function (req, res) {
+            res.json({ custom: 'response' });
+          });
+        },
+      },
+
+      
     plugins: [
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, './src/index.html'),
@@ -32,7 +59,8 @@ const baseConfig = {
 
 module.exports = ({ mode }) => {
     const isProductionMode = mode === 'prod';
-    const envConfig = isProductionMode ? require('./webpack.prod.config') : require('./webpack.dev.config');
+    const envConfig = isProductionMode ? require('./src/webpack.prod.config') : require('./src/webpack.dev.config');
 
     return merge(baseConfig, envConfig);
+
 };

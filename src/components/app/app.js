@@ -1,18 +1,16 @@
-import AppController from '../controller/controller';
-import { AppView } from '../view/appView';
-
-class App {
-    constructor() {
-        this.controller = new AppController();
-        this.view = new AppView();
+"use strict";
+exports.__esModule = true;
+var App = /** @class */ (function () {
+    function App(appController, appView) {
+        this.appController = appController;
+        this.appView = appView;
     }
-
-    start() {
-        document
-            .querySelector('.sources')
-            .addEventListener('click', (e) => this.controller.getNews(e, (data) => this.view.drawNews(data)));
-        this.controller.getSources((data) => this.view.drawSources(data));
-    }
-}
-
-export default App;
+    App.prototype.start = function () {
+        var _this = this;
+        var source = document.querySelector('.sources');
+        source === null || source === void 0 ? void 0 : source.addEventListener('click', function (e) { return _this.appController.getNews(e, function (data) { return _this.appView.drawNews(data); }); });
+        this.appController.getSources(function (data) { return _this.appView.drawSources(data); });
+    };
+    return App;
+}());
+exports["default"] = App;
